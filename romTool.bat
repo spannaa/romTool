@@ -48,7 +48,7 @@ REM Unpack system.new.dat.br
 if exist ..\extracted\system.new.dat.br (
 echo.
 echo Unpacking system.new.dat.br...
-brotli --decompress --in ..\extracted\system.new.dat.br --out ..\extracted\system.new.dat 
+brotli.exe -d ..\extracted\system.new.dat.br -o ..\extracted\system.new.dat
 )
 REM Unpack system.new.dat
 if exist ..\extracted\system.new.dat (
@@ -81,7 +81,8 @@ del /Q ..\extracted\system\build.prop > nul
 copy ..\rom\%ROM%.zip ..\%ROM%\%ROM%.zip > nul
 del /Q ..\rom\%ROM%.zip > nul
 REM Delete extracted folder
-rmdir /q /s ..\extracted > nul
+rmdir /S /Q ..\extracted > nul
+if exist ..\extracted rmdir /S /Q extracted > nul
 REM End of extraction phase - Pause before decompiling
 echo.
 echo All apks have been extracted from %ROM%
@@ -125,7 +126,7 @@ REM Location of decompiled apks
 echo.
 echo Decompiling complete
 echo.
-echo The original rom, it's build.prop ^& decompiled apks can be found 
+echo The original rom, build.prop ^& decompiled apks can be found 
 echo in the %ROM% folder
 echo.
 echo.
