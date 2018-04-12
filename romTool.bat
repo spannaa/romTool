@@ -3,11 +3,11 @@ COLOR 1E
 REM Header
 echo.
 echo #####################################################################
+echo #                              romTOOL                              #
 echo #                                                                   #
-echo # romTOOL - A tool to extract and decompile all apks from a ROM zip #
+echo #    Extract system image and decompile all apks from a ROM zip     #
 echo #                                                                   #
-echo # Compiled by Spannaa @ XDA                                         #
-echo #                                                                   #
+echo #                     Compiled by Spannaa @ XDA                     #
 echo #####################################################################
 REM Check the nomber of ROMs in the rom folder and stop if not one
 set ROM=None
