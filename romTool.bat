@@ -77,38 +77,37 @@ echo.
 echo Unpacking system.img...
 Imgextractor ..\extracted\system.img ..\extracted\system -i
 )
-REM Copy all apks from extracted folder to apks folder
-echo.
-echo Extracting apks...
-if exist ..\apks rmdir /S /Q ..\apks > nul
-mkdir ..\apks
-for /R ..\extracted %%f in (*.apk) do copy %%f ..\apks > nul
-REM Copy all frameworks from extracted\system\framework folder to frameworks folder
-if exist ..\frameworks rmdir /S /Q ..\frameworks > nul
-mkdir ..\frameworks
-for /R ..\extracted\system\framework %%f in (*.apk) do copy %%f ..\frameworks > nul
-for /R ..\extracted\system\system\framework %%f in (*.apk) do copy %%f ..\frameworks > nul
 REM Copy original rom to output folder and delete the original
 if exist ..\%ROM% rmdir /S /Q ..\%ROM% > nul
 mkdir ..\%ROM%
 copy ..\rom\%ROM%.zip ..\%ROM%\%ROM%.zip > nul
 del /Q ..\rom\%ROM%.zip > nul
 REM Move system folder to output folder
-REM - if system is from a payload.bin rom
+rem 	- if system is from a payload.bin rom
 if exist ..\extracted\system\system (
 move ..\extracted\system\system ..\%ROM%\system > nul
 rmdir /S /Q ..\extracted\system > nul 2> nul
 )
-REM - if system is from any other rom
+rem 	- if system is from any other rom
 if exist ..\extracted\system (
 move ..\extracted\system ..\%ROM%\system > nul
 )
 REM Delete extracted folder
 rmdir /S /Q ..\extracted > nul 2> nul
 if exist ..\extracted rmdir /S /Q extracted > nul 2> nul
+REM Copy all apks from the ROM\system folder to apks folder
+echo.
+echo Extracting apks...
+if exist ..\%ROM%\apks rmdir /S /Q ..\%ROM%\apks > nul
+mkdir ..\%ROM%\apks
+for /R ..\%ROM%\system %%F in (*.apk) do copy %%F ..\%ROM%\apks > nul
+REM Copy all frameworks from the ROM\system\framework folder to frameworks folder
+if exist ..\%ROM%\frameworks rmdir /S /Q ..\%ROM%\frameworks > nul
+mkdir ..\%ROM%\frameworks
+for /R ..\%ROM%\system\framework %%F in (*.apk) do copy %%F ..\%ROM%\frameworks > nul
 REM End of extraction phase - Pause before decompiling
 echo.
-echo All apks have been extracted from %ROM%
+echo The system image has been extracted from %ROM%
 echo.
 echo Press any key to start apktool
 echo.
@@ -123,31 +122,29 @@ REM Install frameworks
 echo.
 echo Installing frameworks...
 echo.
-for %%F in (../frameworks/*.apk) do (
+for %%F in (../%ROM%/frameworks/*.apk) do (
 echo   Installing: %%F...
-java -jar apktool.jar if ..\frameworks\%%F > nul 2> nul
+java -jar apktool.jar if ..\%ROM%\frameworks\%%F > nul 2> nul
 )
-REM Delete frameworks folder after installing frameworks
-rmdir /S /Q ..\frameworks > nul
+REM Delete frameworks folder
+rmdir /S /Q ..\%ROM%\frameworks > nul
 REM Decompile all apks
 echo.
 echo Decompiling apks...
 echo.
 mkdir ..\%ROM%\decompiled-apks
-for %%F in (../apks/*.apk) do (
+for %%F in (../%ROM%/apks/*.apk) do (
 echo   Decompiling %%F...
-java -Xmx512m -jar apktool.jar decode ..\apks\%%F -o ..\%ROM%\decompiled-apks\%%F  > nul 2> nul
-if errorlevel 1 (echo   There was an error decompiling %%F
-echo   - Press any key to ignore this apk and continue
-pause > nul
+java -Xmx512m -jar apktool.jar decode ..\%ROM%\apks\%%F -o ..\%ROM%\decompiled-apks\%%F  > nul 2> nul
+if errorlevel 1 (
+echo    - error decompiling %%F
 )
 REM Delete original apk after decompiling to save disk space
-del /Q ..\apks\%%F > nul
+del /Q ..\%ROM%\apks\%%F > nul
 )
 REM Delete apks folder
-rmdir /S /Q ..\apks > nul
-REM Location of decompiled apks
-echo.
+rmdir /S /Q ..\%ROM%\apks > nul
+REM Location of output files and credits
 echo Decompiling complete
 echo.
 echo The original rom, extracted system image ^& decompiled apks can be found 
