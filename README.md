@@ -7,4 +7,5 @@ Credits:
   - 7za standalone command line version of 7-Zip: Igor Pavlov
   - Brotli.exe: Eric Lawrence
   - Extractor: Alexey71 @ XDA & xpirt @ XDA
+  - payload_dumper-win64: geminids14 @ XDA
   - apktool: iBotPeaches @ XDA & Brut.all @ XDA
