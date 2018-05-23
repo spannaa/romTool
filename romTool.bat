@@ -14,7 +14,6 @@ set ROM=None
 set /A filecount=0
 for %%F in (rom/*.zip) do (
 set /A filecount+=1
-REM set zip=%%~nF%%~xF
 set zip=%%~nF
 )
 if %filecount%==0 (
@@ -57,6 +56,21 @@ echo Unpacking system.new.dat...
 echo.
 sdat2img ..\extracted\system.transfer.list ..\extracted\system.new.dat ..\extracted\system.img
 )
+REM Unpack payload.bin
+if exist ..\extracted\payload.bin (
+echo.
+echo Unpacking payload.bin...
+echo.
+if exist payload_input rmdir /S /Q payload_input > nul
+mkdir payload_input
+if exist payload_output rmdir /S /Q payload_output > nul
+mkdir payload_output
+copy ..\extracted\payload.bin payload_input\payload.bin > nul
+payload_dumper 
+copy payload_output\system.img ..\extracted\system.img > nul
+rmdir /S /Q payload_input > nul
+rmdir /S /Q payload_output > nul
+)
 REM Unpack system.img
 if exist ..\extracted\system.img (
 echo.
@@ -73,13 +87,22 @@ REM Copy all frameworks from extracted\system\framework folder to frameworks fol
 if exist ..\frameworks rmdir /S /Q ..\frameworks > nul
 mkdir ..\frameworks
 for /R ..\extracted\system\framework %%f in (*.apk) do copy %%f ..\frameworks > nul
+for /R ..\extracted\system\system\framework %%f in (*.apk) do copy %%f ..\frameworks > nul
 REM Copy original rom to output folder and delete the original
 if exist ..\%ROM% rmdir /S /Q ..\%ROM% > nul
 mkdir ..\%ROM%
 copy ..\rom\%ROM%.zip ..\%ROM%\%ROM%.zip > nul
 del /Q ..\rom\%ROM%.zip > nul
 REM Move system folder to output folder
+REM - if system is from a payload.bin rom
+if exist ..\extracted\system\system (
+move ..\extracted\system\system ..\%ROM%\system > nul
+rmdir /S /Q ..\extracted\system > nul 2> nul
+)
+REM - if system is from any other rom
+if exist ..\extracted\system (
 move ..\extracted\system ..\%ROM%\system > nul
+)
 REM Delete extracted folder
 rmdir /S /Q ..\extracted > nul 2> nul
 if exist ..\extracted rmdir /S /Q extracted > nul 2> nul
@@ -141,6 +164,7 @@ echo # Credits:                                                          #
 echo #                                                                   #
 echo # 7za standalone command line version of 7-Zip: Igor Pavlov         #
 echo # Extractor: Alexey71 @ XDA ^& xpirt @ XDA                           #
+echo # payload_dumper-win64: geminids14 @ XDA                            #
 echo # apktool: iBotPeaches @ XDA ^& Brut.all @ XDA                       #
 echo #                                                                   #
 echo #####################################################################
