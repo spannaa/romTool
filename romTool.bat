@@ -178,7 +178,7 @@ echo #                                                                   #
 echo # Credits:                                                          #
 echo #                                                                   #
 echo # 7za standalone command line version of 7-Zip: Igor Pavlov         #
-echo # Brotli.exe: Eric Lawrence                                         #
+echo # Brotli.exe: https://github.com/google/brotli/releases             #
 echo # Extractor: Alexey71 @ XDA ^& xpirt @ XDA                           #
 echo # payload_dumper-win64: geminids14 @ XDA                            #
 echo # apktool: iBotPeaches @ XDA ^& Brut.all @ XDA                       #
