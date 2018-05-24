@@ -1,15 +1,27 @@
 @echo off
+setlocal enabledelayedexpansion
 COLOR 1E
+if (%1)==(0) goto Start
+REM Create log.txt to log apktool errors
+echo ------------------------------------------------------------------------------------ >> log.txt
+echo  romTool run on: %date% @ %time% >> log.txt
+echo ------------------------------------------------------------------------------------ >> log.txt
+romTool 0 2>> log.txt
+:Start
 REM Header
 echo.
 echo #####################################################################
+echo #                                                                   #
 echo #                              romTOOL                              #
 echo #                                                                   #
-echo #    Extract system image and decompile all apks from a ROM zip     #
+echo #      A Windows tool to extract the contents of system image       #
+echo #   from an OTA ROM zip and optionally decompile all system apks    #
 echo #                                                                   #
 echo #                     Compiled by Spannaa @ XDA                     #
+echo #                                                                   #
 echo #####################################################################
-REM Check the nomber of ROMs in the rom folder and stop if not one
+echo.
+REM Check the number of ROMs in the rom folder and stop if not one
 set ROM=None
 set /A filecount=0
 for %%F in (rom/*.zip) do (
@@ -95,6 +107,16 @@ move ..\extracted\system ..\%ROM%\system > nul
 REM Delete extracted folder
 rmdir /S /Q ..\extracted > nul 2> nul
 if exist ..\extracted rmdir /S /Q extracted > nul 2> nul
+echo.
+echo The system image has been extracted from %ROM%
+echo.
+REM Ask decompile apks or not
+echo Do you want to decompile the apks ^(y/n^)
+echo.
+set /P INPUT=- Type input: %=%
+if %INPUT%==n (goto NoDecompile)
+REM Clear screen before decompiling
+cls
 REM Copy all apks from the ROM\system folder to apks folder
 echo.
 echo Extracting apks...
@@ -105,18 +127,7 @@ REM Copy all frameworks from the ROM\system\framework folder to frameworks folde
 if exist ..\%ROM%\frameworks rmdir /S /Q ..\%ROM%\frameworks > nul
 mkdir ..\%ROM%\frameworks
 for /R ..\%ROM%\system\framework %%F in (*.apk) do copy %%F ..\%ROM%\frameworks > nul
-REM End of extraction phase - Pause before decompiling
-echo.
-echo The system image has been extracted from %ROM%
-echo.
-echo Press any key to start apktool
-echo.
-pause > nul
-REM Clear screen before decompiling
-cls
 REM Delete old frameworks
-if exist %userprofile%\AppData\Local\apktool rmdir /S /Q %userprofile%\AppData\Local\apktool > nul
-if exist %userprofile%\apktool rmdir /S /Q %userprofile%\apktool > nul
 if exist %userprofile%\AppData\Local\Temp\*.apk del /Q %userprofile%\AppData\Local\Temp\*.apk > nul
 REM Install frameworks
 echo.
@@ -124,7 +135,7 @@ echo Installing frameworks...
 echo.
 for %%F in (../%ROM%/frameworks/*.apk) do (
 echo   Installing: %%F...
-java -jar apktool.jar if ..\%ROM%\frameworks\%%F > nul 2> nul
+java -jar apktool.jar if ..\%ROM%\frameworks\%%F -p %userprofile%/AppData/Local/Temp > nul
 )
 REM Delete frameworks folder
 rmdir /S /Q ..\%ROM%\frameworks > nul
@@ -135,27 +146,34 @@ echo.
 mkdir ..\%ROM%\decompiled-apks
 for %%F in (../%ROM%/apks/*.apk) do (
 echo   Decompiling %%F...
-java -Xmx512m -jar apktool.jar decode ..\%ROM%\apks\%%F -o ..\%ROM%\decompiled-apks\%%F  > nul 2> nul
+java -Xmx512m -jar apktool.jar decode ..\%ROM%\apks\%%F -b -o ..\%ROM%\decompiled-apks\%%F -p %userprofile%/AppData/Local/Temp  > nul
 if errorlevel 1 (
-echo    - error decompiling %%F
+echo      error decompiling %%F - check your log.txt
 )
 REM Delete original apk after decompiling to save disk space
 del /Q ..\%ROM%\apks\%%F > nul
 )
 REM Delete apks folder
 rmdir /S /Q ..\%ROM%\apks > nul
-REM Location of output files and credits
+REM Location of output files
+echo.
 echo Decompiling complete
 echo.
 echo The original rom, extracted system image ^& decompiled apks can be found 
 echo in the %ROM% folder
+goto Exit
+:NoDecompile
+REM Location of output files
+echo.
+echo The original rom ^& extracted system image can be found 
+echo in the %ROM% folder
+:Exit
+REM Credits
 echo.
 echo.
 echo #####################################################################
 echo #                                                                   #
-echo # romTOOL - A tool to extract and decompile all apks from a ROM zip #
-echo #                                                                   #
-echo # Compiled by Spannaa @ XDA                                         #
+echo # romTOOL - Compiled by Spannaa @ XDA                               #
 echo #                                                                   #
 echo # Credits:                                                          #
 echo #                                                                   #
@@ -172,5 +190,4 @@ REM Pause before exiting
 echo Press any key to exit
 echo.
 pause > nul
-REM Exit
 exit
