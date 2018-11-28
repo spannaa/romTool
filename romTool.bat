@@ -14,8 +14,9 @@ echo #####################################################################
 echo #                                                                   #
 echo #                              romTOOL                              #
 echo #                                                                   #
-echo #      A Windows tool to extract the contents of system image       #
-echo #   from an OTA ROM zip and optionally decompile all system apks    #
+echo #             A Windows tool to extract the contents of             # 
+echo #             system & vendor images from an OTA ROM zip            #
+echo #              and optionally decompile all system apks             #
 echo #                                                                   #
 echo #                     Compiled by Spannaa @ XDA                     #
 echo #                                                                   #
