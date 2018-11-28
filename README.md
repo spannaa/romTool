@@ -1,5 +1,5 @@
 # romTool
-A Windows tool to extract the contents of system image from an OTA ROM zip and optionally decompile all system apks.
+A Windows tool to extract the contents of system & vendor images from an OTA ROM zip and optionally decompile all system apks.
 
 To use it, copy a ROM zip into the rom folder and run romTool.bat
 
