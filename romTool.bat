@@ -14,9 +14,9 @@ echo #####################################################################
 echo #                                                                   #
 echo #                              romTOOL                              #
 echo #                                                                   #
-echo #             A Windows tool to extract the contents of             # 
-echo #            system ^& vendor images from an OTA ROM zip             #
-echo #              and optionally decompile all system apks             #
+echo #             A Windows tool to extract the contents of             #
+echo #               the system image from an OTA ROM zip                # 
+echo #             and optionally, decompile all system apks             #
 echo #                                                                   #
 echo #                     Compiled by Spannaa @ XDA                     #
 echo #                                                                   #
@@ -68,11 +68,11 @@ brotli.exe -d ..\extracted\system.new.dat.br -o ..\extracted\system.new.dat
 )
 
 REM Unpack vendor.new.dat.br
-if exist ..\extracted\vendor.new.dat.br (
-echo.
-echo Unpacking vendor.new.dat.br...
-brotli.exe -d ..\extracted\vendor.new.dat.br -o ..\extracted\vendor.new.dat
-)
+REM if exist ..\extracted\vendor.new.dat.br (
+REM echo.
+REM echo Unpacking vendor.new.dat.br...
+REM brotli.exe -d ..\extracted\vendor.new.dat.br -o ..\extracted\vendor.new.dat
+REM )
 
 REM Unpack system.new.dat
 if exist ..\extracted\system.new.dat (
@@ -83,12 +83,12 @@ sdat2img ..\extracted\system.transfer.list ..\extracted\system.new.dat ..\extrac
 )
 
 REM Unpack vendor.new.dat
-if exist ..\extracted\vendor.new.dat (
-echo.
-echo Unpacking vendor.new.dat...
-echo.
-sdat2img ..\extracted\vendor.transfer.list ..\extracted\vendor.new.dat ..\extracted\vendor.img
-)
+REM if exist ..\extracted\vendor.new.dat (
+REM echo.
+REM echo Unpacking vendor.new.dat...
+REM echo.
+REM sdat2img ..\extracted\vendor.transfer.list ..\extracted\vendor.new.dat ..\extracted\vendor.img
+REM )
 
 REM Unpack payload.bin
 if exist ..\extracted\payload.bin (
@@ -104,9 +104,9 @@ payload_dumper
 if exist payload_output\system.img (
 copy payload_output\system.img ..\extracted\system.img > nul
 )
-if exist payload_output\vendor.img (
-copy payload_output\vendor.img ..\extracted\vendor.img > nul
-)
+REM if exist payload_output\vendor.img (
+REM copy payload_output\vendor.img ..\extracted\vendor.img > nul
+REM )
 rmdir /S /Q payload_input > nul
 rmdir /S /Q payload_output > nul
 )
@@ -118,12 +118,12 @@ echo Unpacking system.img...
 Imgextractor ..\extracted\system.img ..\extracted\system -i
 )
 
-REM Unpack system.img
-if exist ..\extracted\vendor.img (
-echo.
-echo Unpacking vendor.img...
-Imgextractor ..\extracted\vendor.img ..\extracted\vendor -i
-)
+REM Unpack vendor.img
+REM if exist ..\extracted\vendor.img (
+REM echo.
+REM echo Unpacking vendor.img...
+REM Imgextractor ..\extracted\vendor.img ..\extracted\vendor -i
+REM )
 
 REM Copy original rom to output folder and delete the original
 if exist ..\%ROM% rmdir /S /Q ..\%ROM% > nul
@@ -132,24 +132,26 @@ copy ..\rom\%ROM%.zip ..\%ROM%\%ROM%.zip > nul
 del /Q ..\rom\%ROM%.zip > nul
 
 REM Move system folder to output folder
-
-rem 	- if system is from a payload.bin rom
+rem - if from a payload.bin rom
 if exist ..\extracted\system\system (
 move ..\extracted\system\system ..\%ROM%\system > nul
 rmdir /S /Q ..\extracted\system > nul 2> nul
 )
-if exist ..\extracted\vendor\vendor (
-move ..\extracted\vendor\vendor ..\%ROM%\vendor > nul
-rmdir /S /Q ..\extracted\vendor > nul 2> nul
-)
-
-rem 	- if system is from any other rom
+rem - if from any other rom
 if exist ..\extracted\system (
 move ..\extracted\system ..\%ROM%\system > nul
 )
-if exist ..\extracted\vendor (
-move ..\extracted\vendor ..\%ROM%\vendor > nul
-)
+
+REM Move vendor folder to output folder
+rem - if from a payload.bin rom
+REM if exist ..\extracted\vendor\vendor (
+REM move ..\extracted\vendor\vendor ..\%ROM%\vendor > nul
+REM rmdir /S /Q ..\extracted\vendor > nul 2> nul
+REM )
+rem - if from any other rom
+REM if exist ..\extracted\vendor (
+REM move ..\extracted\vendor ..\%ROM%\vendor > nul
+REM )
 
 REM Delete extracted folder
 rmdir /S /Q ..\extracted > nul 2> nul
